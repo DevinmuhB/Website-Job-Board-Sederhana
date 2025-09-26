@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobHub - Portal Lowongan Kerja</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">JobHub</div>
+            
+            <div class="nav-links">
+                <a href="#" class="nav-link" onclick="showSection('home')">Beranda</a>
+                <a href="#" class="nav-link" onclick="showSection('jobs')">Lowongan</a>
+            </div>
+            
+            <div class="auth-buttons" id="authButtons">
+                <a href="#" class="btn btn-secondary" onclick="showModal('loginModal')">Masuk</a>
+                <a href="#" class="btn btn-primary" onclick="showModal('registerModal')">Daftar</a>
+            </div>
+            
+            <div class="auth-buttons hidden" id="userMenu">
+                <span id="userWelcome"></span>
+                <a href="#" class="btn btn-secondary" onclick="showDashboard()">Dashboard</a>
+                <a href="#" class="btn btn-danger" onclick="logout()">Keluar</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main container">
+        <!-- Home Section -->
+        <section id="home" class="section">
+            <div class="hero">
+                <h1>Temukan Pekerjaan Impianmu</h1>
+                <p>Platform terpercaya untuk mencari lowongan kerja dan menemukan talenta terbaik</p>
+            </div>
+
+            <div class="search-section">
+                <form class="search-form" onsubmit="searchJobs(event)">
+                    <div class="form-group">
+                        <label for="searchKeyword">Kata Kunci</label>
+                        <input type="text" id="searchKeyword" class="form-control" placeholder="Cari pekerjaan...">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchLocation">Lokasi</label>
+                        <input type="text" id="searchLocation" class="form-control" placeholder="Kota atau wilayah">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchCategory">Kategori</label>
+                        <select id="searchCategory" class="form-control">
+                            <option value="">Semua Kategori</option>
+                            <option value="IT">Teknologi Informasi</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Finance">Keuangan</option>
+                            <option value="HR">Human Resources</option>
+                            <option value="Design">Desain</option>
+                            <option value="Sales">Penjualan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Cari</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="jobsContainer" class="jobs-grid"></div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section dashboard">
+            <div class="dashboard-header">
+                <h2 id="dashboardTitle">Dashboard</h2>
+                <div class="dashboard-nav">
+                    <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+                    <button class="tab-btn" id="jobsTab" onclick="showTab('jobs')">Lowongan Saya</button>
+                    <button class="tab-btn" id="applicationsTab" onclick="showTab('applications')">Lamaran Saya</button>
+                    <button class="tab-btn" id="postJobTab" onclick="showTab('postJob')">Posting Lowongan</button>
+                </div>
+            </div>
+
+            <div id="overview" class="tab-content active">
+                <div class="jobs-grid" id="overviewStats"></div>
+            </div>
+
+            <div id="jobs" class="tab-content">
+                <div id="myJobsContainer"></div>
+            </div>
+
+            <div id="applications" class="tab-content">
+                <div id="myApplicationsContainer"></div>
+            </div>
+
+            <div id="postJob" class="tab-content">
+                <div class="search-section">
+                    <h3>Posting Lowongan Baru</h3>
+                    <form onsubmit="postJob(event)">
+                        <div class="form-group">
+                            <label for="jobTitle">Judul Pekerjaan</label>
+                            <input type="text" id="jobTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobCategory">Kategori</label>
+                            <select id="jobCategory" class="form-control" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="IT">Teknologi Informasi</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Finance">Keuangan</option>
+                                <option value="HR">Human Resources</option>
+                                <option value="Design">Desain</option>
+                                <option value="Sales">Penjualan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobLocation">Lokasi</label>
+                            <input type="text" id="jobLocation" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobSalary">Gaji (Opsional)</label>
+                            <input type="text" id="jobSalary" class="form-control" placeholder="Contoh: Rp 5.000.000 - 8.000.000">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobDescription">Deskripsi Pekerjaan</label>
+                            <textarea id="jobDescription" class="form-control" rows="6" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Posting Lowongan</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Masuk ke Akun</h3>
+                <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="login(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginUserType">Tipe Pengguna</label>
+                        <select id="loginUserType" class="form-control" required>
+                            <option value="jobseeker">Pencari Kerja</option>
+                            <option value="company">Perusahaan</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Masuk</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Belum punya akun? <a href="#" onclick="closeModal('loginModal'); showModal('registerModal');">Daftar di sini</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Daftar Akun Baru</h3>
+                <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="register(event)">
+                    <div class="form-group">
+                        <label for="registerName">Nama Lengkap</label>
+                        <input type="text" id="registerName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerUserType">Tipe Pengguna</label>
+                        <select id="registerUserType" class="form-control" required>
+                            <option value="jobseeker">Pencari Kerja</option>
+                            <option value="company">Perusahaan</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Daftar</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem;">
+                    Sudah punya akun? <a href="#" onclick="closeModal('registerModal'); showModal('loginModal');">Masuk di sini</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Detail Modal -->
+    <div id="jobDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="jobDetailTitle">Detail Pekerjaan</h3>
+                <span class="close" onclick="closeModal('jobDetailModal')">&times;</span>
+            </div>
+            <div class="modal-body" id="jobDetailContent">
+                <!-- Job details will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Apply Job Modal -->
+    <div id="applyJobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Lamar Pekerjaan</h3>
+                <span class="close" onclick="closeModal('applyJobModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="applyJob(event)">
+                    <div class="form-group">
+                        <label for="applicantName">Nama Lengkap</label>
+                        <input type="text" id="applicantName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantEmail">Email</label>
+                        <input type="email" id="applicantEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantPhone">Nomor Telepon</label>
+                        <input type="tel" id="applicantPhone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantCV">Upload CV (PDF)</label>
+                        <div class="file-upload">
+                            <input type="file" id="applicantCV" accept=".pdf" required>
+                            <div class="file-upload-btn">
+                                <span>Pilih file CV (PDF)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="coverLetter">Cover Letter</label>
+                        <textarea id="coverLetter" class="form-control" rows="5" placeholder="Tulis cover letter Anda..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Kirim Lamaran</button>
+                </form>
+            </div>
+        </div>
+    </div>
+<script src="assets/js/script.js"></script>
+</body>
+</html>
